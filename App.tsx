@@ -17,6 +17,12 @@ import MotionScreen from './src/screens/MotionScreen';
 import LightScreen from './src/screens/LightScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import LocationScreen from './src/screens/LocationScreen';
+import { accelerometer } from 'react-native-sensors';
+
+import {
+  map,
+  filter
+} from 'rxjs/operators';
 
 let Tab = createDrawerNavigator();
 
@@ -33,6 +39,15 @@ function App(): React.JSX.Element {
       </NavigationContainer>
     </>
   );
+}
+
+function getMotionInfo() {
+  let motionSpeed;
+  const subscription = accelerometer.pipe(map(({ x, y, z }) => x + y + z), filter(speed => speed > 20)).subscribe((speed) => { motionSpeed = speed; });
+  setTimeout(() => {
+    subscription.unsubscribe();
+  }, 1000);
+  return motionSpeed;
 }
 
 // const styles = StyleSheet.create({
